@@ -1,10 +1,5 @@
 import { CasterType, FullCasterSpellPoints, HalfCasterSpellPoints, ThirdCasterSpellPoints, PointsPerSpellLevel, SpellLevel, ArtificerCasterSpellPoints, progressionByCasterType } from './constants';
-
-export interface SpellPointPool {
-  casterType: CasterType;
-  level: number;
-  usedSpells: number[];
-}
+import { SpellPointPool } from './interfaces';
 
 export function getUsedSpellPoints(pool: SpellPointPool) {
   let used = 0;

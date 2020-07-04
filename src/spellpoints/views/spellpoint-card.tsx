@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { SpellPointPool } from '../utilities';
+import { SpellPointPool } from '../interfaces';
 import React from 'react';
 import { css } from "emotion";
 import { IconButton, IconPlus, IconMinus, Layer, useTheme, Text, IconCircle, Divider } from 'sancho';

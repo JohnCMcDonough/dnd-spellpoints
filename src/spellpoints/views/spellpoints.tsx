@@ -5,13 +5,15 @@ import { CasterType, PointsPerSpellLevel } from '../constants';
 import * as util from '../utilities';
 import { css } from 'emotion';
 import { SpellpointCardView } from './spellpoint-card';
+import { SpellPointPool } from '../interfaces';
+import { SpellPointCardListView } from './spellpoint-card-list';
 
 interface SpellPointProps {
 }
 
 export const SpellPointView: React.FunctionComponent<SpellPointProps> = (props) => {
 
-  const [pool, setPool] = React.useState({ casterType: CasterType.FULL, level: 1, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0] });
+  const [pool, setPool] = React.useState<SpellPointPool>({ casterType: CasterType.FULL, level: 1, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0] });
 
   function updateCasterType(casterType: CasterType) {
     setPool({ ...pool, casterType: casterType });
@@ -22,18 +24,9 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = (props) 
   }
 
   function modifyCastings(level: number, times: number) {
-    const newPool: typeof pool = JSON.parse(JSON.stringify(pool));
+    const newPool: SpellPointPool = JSON.parse(JSON.stringify(pool));
     newPool.usedSpells[level] += times;
     setPool(newPool)
-  }
-
-  function renderSpellCard(spellLevel: number) {
-    return (<SpellpointCardView
-      level={spellLevel}
-      pool={pool}
-      cast={() => modifyCastings(spellLevel, 1)}
-      uncast={() => modifyCastings(spellLevel, -1)}
-    />);
   }
 
   function renderSpellPointHeader() {
@@ -77,14 +70,10 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = (props) 
 
       {renderSpellPointHeader()}
 
-      <div className={css`
-            display: flex;
-            max-width: '100%';
-            flex-wrap: wrap;
-            justify-content: center;
-          `}>
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(v => renderSpellCard(v))}
-      </div>
+      <SpellPointCardListView
+        modifyCastings={(level, change) => { modifyCastings(level, change) }}
+        pool={pool}
+      />
       <Text>
         {JSON.stringify(util.getCurrentProgression(pool), null, 2)}
         {JSON.stringify(util.getRemainingSpellSlotsLeftByLevel(pool), null, 2)}

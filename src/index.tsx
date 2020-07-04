@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App from './main/main';
 import * as serviceWorker from './serviceWorker';
+import { DarkMode } from 'sancho';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <DarkMode>
+      <App />
+    </DarkMode>
   </React.StrictMode>,
   document.getElementById('root')
 );

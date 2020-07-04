@@ -19,15 +19,22 @@ function renderSpellPointBubbleGrid(bubbles: string[]) {
 }
 
 function renderSpellPointBubble(state: 'used' | 'remaining' | 'lost') {
+  let color: string = 'black';
+  let fill: string = '';
   if (state === 'used') {
-    return (<IconCircle color='black' />)
+    fill = 'black'
   }
   if (state === 'remaining') {
-    return (<IconCircle color='' />)
+    color = 'white'
+    fill='rgba(0,0,0,0)'
   }
   if (state === 'lost') {
-    return (<IconCircle color='red' />)
+    fill = 'darkred';
   }
+  // return (<IconCircle color={fill} />)
+  return (<svg height="20" width="20">
+    <circle cx="10" cy="10" r="8" stroke={color} stroke-width="1" fill={fill} />
+  </svg>)
 }
 
 export const SpellpointCardView: React.FunctionComponent<SpellpointCardProps> = (props) => {

@@ -14,10 +14,6 @@ export interface SpellpointCardProps {
   uncast: Function;
 }
 
-export interface SpellpointCardState {
-
-}
-
 function renderSpellPointBubbleGrid(bubbles: string[]) {
   return bubbles.map((b, i) => <>{i % 10 === 0 ? <br /> : ''}{renderSpellPointBubble(b as any)}</>)
 }

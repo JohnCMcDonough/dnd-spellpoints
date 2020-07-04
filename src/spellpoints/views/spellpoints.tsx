@@ -1,19 +1,20 @@
-import React, { Component } from 'react';
-import { useTheme, Text, InputGroup, Select, Input, Layer, Button, IconCircle, IconTarget } from 'sancho';
-import { ReactComponent } from '*.svg';
-import { CasterType, PointsPerSpellLevel } from '../constants';
+import React from 'react';
+import { Text, InputGroup, Select, Button } from 'sancho';
+import { CasterType, PLAYER_LEVELS } from '../constants';
 import * as util from '../utilities';
 import { css } from 'emotion';
-import { SpellpointCardView } from './spellpoint-card';
 import { SpellPointPool } from '../interfaces';
 import { SpellPointCardListView } from './spellpoint-card-list';
+
+// @ts-ignore:nextline
+import useLocalStorage from 'local-storage-hook'
 
 interface SpellPointProps {
 }
 
-export const SpellPointView: React.FunctionComponent<SpellPointProps> = (props) => {
+export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
 
-  const [pool, setPool] = React.useState<SpellPointPool>({ casterType: CasterType.FULL, level: 1, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0] });
+  const [pool, setPool] = useLocalStorage('spellpoint-config', { casterType: CasterType.FULL, level: 1, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0] }) as [SpellPointPool, (p: SpellPointPool) => void];
 
   function updateCasterType(casterType: CasterType) {
     setPool({ ...pool, casterType: casterType });
@@ -21,6 +22,10 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = (props) 
 
   function updateCasterLevel(level: number) {
     setPool({ ...pool, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0], level })
+  }
+
+  function longRest() {
+    setPool({ ...pool, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0] })
   }
 
   function modifyCastings(level: number, times: number) {
@@ -55,18 +60,22 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = (props) 
   return (
     <>
       <InputGroup label="spellpoint-info">
-        <Select inputSize="sm" onChange={(evt) => updateCasterType(+evt.target.value as any)}>
+        <Select value={pool.casterType} inputSize="sm" onChange={(evt) => updateCasterType(+evt.target.value as any)}>
           <option value={CasterType.FULL}>Full Caster</option>
           <option value={CasterType.HALF}>Half Caster</option>
           <option value={CasterType.THIRD}>Third Caster</option>
           <option value={CasterType.ARTIFICER}>Artificer</option>
         </Select>
-        <Select inputSize="sm" onChange={(evt) => updateCasterLevel(+evt.target.value as any)}>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(l => (
+        <Select value={pool.level} inputSize="sm" onChange={(evt) => updateCasterLevel(+evt.target.value as any)}>
+          {PLAYER_LEVELS.map(l => (
             <option value={l}>Level {l}</option>
           ))}
         </Select>
       </InputGroup>
+      <div>
+        <Button onClick={() => { if (window.confirm('Are you sure you want to Long Rest?')) longRest() }}>Long Rest</Button>
+      </div>
+
 
       {renderSpellPointHeader()}
 
@@ -74,10 +83,6 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = (props) 
         modifyCastings={(level, change) => { modifyCastings(level, change) }}
         pool={pool}
       />
-      <Text>
-        {JSON.stringify(util.getCurrentProgression(pool), null, 2)}
-        {JSON.stringify(util.getRemainingSpellSlotsLeftByLevel(pool), null, 2)}
-      </Text>
     </>
   )
 }

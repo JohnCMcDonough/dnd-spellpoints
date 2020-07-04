@@ -7616,6 +7616,11 @@ loader-utils@^1.1.0, loader-utils@^1.2.3, loader-utils@^1.4.0:
     emojis-list "^3.0.0"
     json5 "^1.0.1"
 
+local-storage-hook@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/local-storage-hook/-/local-storage-hook-1.2.0.tgz#f98e418ad022d2bdfe249cd7d2882508dddf9bf5"
+  integrity sha512-0HYGOnTSgWVjUJsDaTW11wHptVk8IbsuRY1b+gIWUalQ3RzTAho1e8kkJ8lz1D+eZJOv93dvgkby3hxJVHPu/Q==
+
 locate-path@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/locate-path/-/locate-path-2.0.0.tgz#2b568b265eec944c6d9c0de9c3dbbbca0354cd8e"

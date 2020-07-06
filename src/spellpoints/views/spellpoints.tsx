@@ -92,7 +92,7 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
     `}>
       <Text variant='h1'> Spell Casting</Text>
       <hr />
-      <InputGroup label="Spellcaster Type">
+      <InputGroup label="Spell Caster Type">
         <Select value={pool.casterType} inputSize="sm" onChange={(evt) => updateCasterType(+evt.target.value as any)}>
           <option value={CasterType.FULL}>Full Caster</option>
           <option value={CasterType.HALF}>Half Caster</option>
@@ -100,7 +100,7 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
           <option value={CasterType.ARTIFICER}>Artificer</option>
         </Select>
       </InputGroup>
-      <InputGroup label="Caster Level">
+      <InputGroup label="Spell Caster Level">
         <Select value={pool.level} inputSize="sm" onChange={(evt) => updateCasterLevel(+evt.target.value as any)}>
           {PLAYER_LEVELS.map(l => (
             <option value={l}>Level {l}</option>
@@ -112,9 +112,12 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
         border-color: ${theme.colors.border.default};
       `} /> */}
       <div className={css`
-        margin: 10px 0px;
+        margin-top: 20px;
+        margin-bottom: 10px;
       `}>
-        <Button onClick={() => { if (window.confirm('Are you sure you want to Long Rest?')) longRest() }}>Long Rest</Button>
+        <Button className={css`
+        width: 100%;
+        `} onClick={() => { if (window.confirm('Are you sure you want to Long Rest?')) longRest() }}>Long Rest</Button>
       </div>
       {/* <div className={css`
         margin: 10px 0px;

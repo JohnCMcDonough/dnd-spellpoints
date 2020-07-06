@@ -26,7 +26,7 @@ function renderSpellPointBubble(state: 'used' | 'remaining' | 'lost') {
   }
   if (state === 'remaining') {
     color = 'white'
-    fill='rgba(0,0,0,0)'
+    fill = 'rgba(0,0,0,0)'
   }
   if (state === 'lost') {
     fill = 'darkred';
@@ -58,7 +58,10 @@ export const SpellpointCardView: React.FunctionComponent<SpellpointCardProps> = 
     ...new Array(lostByOtherLevels).fill('lost'),
   ]
 
-  const layer = css`
+
+  function regularRender() {
+
+    const layer = css`
       display: flex;
       flex-wrap: wrap;
       flex-direction: column;
@@ -70,7 +73,7 @@ export const SpellpointCardView: React.FunctionComponent<SpellpointCardProps> = 
       background-color: ${theme.colors.background.tint2};
     `;
 
-  const row = css`
+    const row = css`
       display: flex;
       width: 100%;
       flex-grow: 0;
@@ -78,7 +81,7 @@ export const SpellpointCardView: React.FunctionComponent<SpellpointCardProps> = 
       height: 50px;
     `;
 
-  const item = css`
+    const item = css`
       flex-grow: 1;
       flex-shrink: 0; 
       background-color: ${theme.colors.background.overlay};
@@ -90,53 +93,136 @@ export const SpellpointCardView: React.FunctionComponent<SpellpointCardProps> = 
       border-color: 'red';
     `;
 
-  return (
-    <Layer elevation='sm' className={layer}>
+
+    return (
+      <Layer elevation='sm' className={layer}>
 
 
-      {/* Row 1 */}
-      <div className={row}>
-        {/* Spell Level */}
-        <div className={item}>
-          <Text variant='display3'>{displaySpellLevel}</Text>
+        {/* Row 1 */}
+        <div className={row}>
+          {/* Spell Level */}
+          <div className={item}>
+            <Text variant='display3'>{displaySpellLevel}</Text>
+          </div>
+          {/* Cast and Uncast */}
+          <div className={item}>
+            <IconButton disabled={timesCast === 0} label='uncast' icon={<IconMinus />} onClick={() => props.uncast()}></IconButton>
+            <IconButton disabled={remainingCasts === 0} label='cast' icon={<IconPlus />} onClick={() => props.cast()}></IconButton>
+          </div>
+          {/* Spellpoint Cost */}
+          <div className={item}>
+            <Text>Cost:<br />{costToCast}sp</Text>
+          </div>
         </div>
-        {/* Cast and Uncast */}
-        <div className={item}>
-          <IconButton disabled={timesCast === 0} label='uncast' icon={<IconMinus />} onClick={() => props.uncast()}></IconButton>
-          <IconButton disabled={remainingCasts === 0} label='cast' icon={<IconPlus />} onClick={() => props.cast()}></IconButton>
+        {/* Row 2 */}
+        <div className={row}>
+          {/* Remaining */}
+          <div className={item}>
+            <Text>Left:<br />{remainingCasts}</Text>
+          </div>
+          {/* Used */}
+          <div className={item}>
+            <Text>Cast:<br />{timesCast}</Text>
+          </div>
+          {/* Total */}
+          <div className={item}>
+            <Text>Total:<br />{totalCasts}</Text>
+          </div>
         </div>
-        {/* Spellpoint Cost */}
-        <div className={item}>
-          <Text>Cost:<br />{costToCast}sp</Text>
-        </div>
-      </div>
-      {/* Row 2 */}
-      <div className={row}>
-        {/* Remaining */}
-        <div className={item}>
-          <Text>Left:<br />{remainingCasts}</Text>
-        </div>
-        {/* Used */}
-        <div className={item}>
-          <Text>Cast:<br />{timesCast}</Text>
-        </div>
-        {/* Total */}
-        <div className={item}>
-          <Text>Total:<br />{totalCasts}</Text>
-        </div>
-      </div>
 
 
-      {/* Row 3 */}
-      <div className={css`
+        {/* Row 3 */}
+        <div className={css`
         justify-content: left;
         text-align: left;
         vertical-align: top;
         flex-grow: 1;
         flex-shrink: 0;
       `}>
-        {renderSpellPointBubbleGrid(bubblesArray)}
-      </div>
-    </Layer>
-  )
+          {renderSpellPointBubbleGrid(bubblesArray)}
+        </div>
+      </Layer>
+    )
+  };
+
+  function alternativeRender() {
+    const layer = css`
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: column;
+      padding: 10px;
+      width: 200px;
+      text-align: center;
+      margin: 20px;
+      border-radius: 5px;
+      background-color: ${theme.colors.background.tint2};
+    `;
+    const table = css`
+      border-collapse: collapse !important;
+    `;
+    const row = css`
+      /* display: flex; */
+      width: 100%;
+      min-height: 50px;
+    `;
+    const data = css`
+      background-color: ${theme.colors.background.overlay};
+      justify-content: center;
+      text-align: center;
+      vertical-align: center;
+      border: 1px solid ${theme.colors.border.default};
+      width: 33%;
+    `;
+
+    return (
+      <Layer elevation='sm' className={layer}>
+
+        <table className={table}>
+          {/* Row 1 */}
+          <tr className={row}>
+            {/* Spell Level */}
+            <td className={data}>
+              <Text variant='display3'>{displaySpellLevel}</Text>
+            </td>
+            {/* Cast and Uncast */}
+            <td className={data}>
+              <IconButton disabled={remainingCasts === 0} label='cast' icon={<IconPlus />} onClick={() => props.cast()}></IconButton>
+              <IconButton disabled={timesCast === 0} label='uncast' icon={<IconMinus />} onClick={() => props.uncast()}></IconButton>
+            </td>
+            {/* Spellpoint Cost */}
+            <td className={data}>
+              <Text>Cost:<br />{costToCast}sp</Text>
+            </td>
+          </tr>
+          {/* Row 2 */}
+          <tr className={row}>
+            {/* Remaining */}
+            <td className={data}>
+              <Text>Left:<br />{remainingCasts}</Text>
+            </td>
+            {/* Used */}
+            <td className={data}>
+              <Text>Cast:<br />{timesCast}</Text>
+            </td>
+            {/* Total */}
+            <td className={data}>
+              <Text>Total:<br />{totalCasts}</Text>
+            </td>
+          </tr>
+        </table>
+        {/* Row 3 */}
+        <div>
+          <td colSpan={3} className={css`
+            justify-content: left;
+            text-align: left;
+            vertical-align: top;
+          `}>
+            {renderSpellPointBubbleGrid(bubblesArray)}
+          </td>
+        </div>
+      </Layer>
+    )
+  }
+
+  return alternativeRender();
 }

@@ -17,6 +17,7 @@ function App() {
           body: {
             padding: 0,
             margin: 0,
+            marginBottom: '50vh',
             width: '100vw',
             height: '100vh',
             "*:focus": {

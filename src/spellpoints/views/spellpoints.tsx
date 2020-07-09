@@ -12,11 +12,15 @@ import useLocalStorage from 'local-storage-hook'
 interface SpellPointProps {
 }
 
+const defaultSpellPointPool: SpellPointPool = { casterType: CasterType.FULL, level: 1, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0], tempSpellPointMod: 0, permanentSpellPointMod: 0 };
+
 export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
 
   const theme = useTheme();
 
-  const [pool, setPool] = useLocalStorage('spellpoint-config', { casterType: CasterType.FULL, level: 1, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0] }) as [SpellPointPool, (p: SpellPointPool) => void];
+  let [pool, setPool] = useLocalStorage('spellpoint-config', defaultSpellPointPool ) as [SpellPointPool, (p: SpellPointPool) => void];
+
+  pool = {...defaultSpellPointPool, ...pool};
 
   function updateCasterType(casterType: CasterType) {
     setPool({ ...pool, casterType: casterType });
@@ -26,8 +30,28 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
     setPool({ ...pool, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0], level })
   }
 
+  function updatePermanentSpellPoints(points: number) {
+    const previousMod = pool.permanentSpellPointMod;
+    const pointsRemaining = util.getRemainingSpellPoints(pool);
+    const unmodifiedPointsRemaining = pointsRemaining - previousMod;
+    if(-points > unmodifiedPointsRemaining) {
+      points = -unmodifiedPointsRemaining;
+    };
+    setPool({ ...pool, permanentSpellPointMod: points });
+  }
+
+  function updateTemporarySpellPoints(points: number) {
+    const previousMod = pool.tempSpellPointMod;
+    const pointsRemaining = util.getRemainingSpellPoints(pool);
+    const unmodifiedPointsRemaining = pointsRemaining - previousMod;
+    if(-points > unmodifiedPointsRemaining) {
+      points = -unmodifiedPointsRemaining;
+    };
+    setPool({ ...pool, tempSpellPointMod: points });
+  }
+
   function longRest() {
-    setPool({ ...pool, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0] })
+    setPool({ ...pool, usedSpells: [0, 0, 0, 0, 0, 0, 0, 0, 0], tempSpellPointMod: 0 })
   }
 
   function modifyCastings(level: number, times: number) {
@@ -37,7 +61,7 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
   }
 
   function renderSpellPointHeader() {
-    const totalSpellPointsForLevel = util.getCurrentProgression(pool).maxSpellPoints
+    const totalSpellPointsForLevel = util.getMaxSpellPoints(pool)
     const remainingSpellPoints = util.getRemainingSpellPoints(pool);
     const usedSpellPoints = util.getUsedSpellPoints(pool);
 
@@ -86,6 +110,12 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
     )
   }
 
+  const optionCss = css`
+    background-color: ${theme.colors.background.tint1} !important;
+    color: ${theme.colors.text.default} !important;
+    border: none;
+  `;
+
   return (
     <Layer elevation="xs" className={css`
       padding: 15px;
@@ -94,16 +124,16 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
       <hr />
       <InputGroup label="Spell Caster Type">
         <Select value={pool.casterType} inputSize="sm" onChange={(evt) => updateCasterType(+evt.target.value as any)}>
-          <option value={CasterType.FULL}>Full Caster</option>
-          <option value={CasterType.HALF}>Half Caster</option>
-          <option value={CasterType.THIRD}>Third Caster</option>
-          <option value={CasterType.ARTIFICER}>Artificer</option>
+          <option className={optionCss} value={CasterType.FULL}>Full Caster</option>
+          <option className={optionCss} value={CasterType.HALF}>Half Caster</option>
+          <option className={optionCss} value={CasterType.THIRD}>Third Caster</option>
+          <option className={optionCss} value={CasterType.ARTIFICER}>Artificer</option>
         </Select>
       </InputGroup>
       <InputGroup label="Spell Caster Level">
         <Select value={pool.level} inputSize="sm" onChange={(evt) => updateCasterLevel(+evt.target.value as any)}>
           {PLAYER_LEVELS.map(l => (
-            <option value={l}>Level {l}</option>
+            <option className={optionCss} value={l}>Level {l}</option>
           ))}
         </Select>
       </InputGroup>
@@ -116,8 +146,16 @@ export const SpellPointView: React.FunctionComponent<SpellPointProps> = () => {
         margin-bottom: 10px;
       `}>
         <Button className={css`
-        width: 100%;
+          width: 50%;
         `} onClick={() => { if (window.confirm('Are you sure you want to Long Rest?')) longRest() }}>Long Rest</Button>
+        <InputGroup className={css`
+          width: 25%;
+          display: inline-block;
+        `} label="Temp Spell Point Mod"><Input type="number" value={pool.tempSpellPointMod} onChange={(evt)=>updateTemporarySpellPoints(+evt.target.value)} /></InputGroup>
+        <InputGroup className={css`
+          width: 25%;
+          display: inline-block;
+        `} label="Permanent Spell Point Mod"><Input type="number" value={pool.permanentSpellPointMod} onChange={(evt)=>updatePermanentSpellPoints(+evt.target.value)} /></InputGroup>
       </div>
       {/* <div className={css`
         margin: 10px 0px;

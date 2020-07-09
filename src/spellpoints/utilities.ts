@@ -1,4 +1,4 @@
-import { CasterType, FullCasterSpellPoints, HalfCasterSpellPoints, ThirdCasterSpellPoints, PointsPerSpellLevel, SpellLevel, ArtificerCasterSpellPoints, progressionByCasterType } from './constants';
+import { PointsPerSpellLevel, SpellLevel, progressionByCasterType } from './constants';
 import { SpellPointPool } from './interfaces';
 
 export function getUsedSpellPoints(pool: SpellPointPool) {
@@ -30,16 +30,22 @@ export function getRemainingSpellSlotsLeftForLevel(pool: SpellPointPool, spellLe
 }
 
 export function getRemainingSpellPoints(pool: SpellPointPool) {
-  return getCurrentProgression(pool).maxSpellPoints - getUsedSpellPoints(pool);
+  return getMaxSpellPoints(pool) - getUsedSpellPoints(pool);
+}
+
+export function getMaxSpellPoints(pool: SpellPointPool) {
+  const progression = getCurrentProgression(pool);
+  return progression.maxSpellPoints + pool.permanentSpellPointMod + pool.tempSpellPointMod;
 }
 
 export function getTotalAvailableCastsForLevel(pool: SpellPointPool, level: number) {
   const progression = getCurrentProgression(pool);
+  const maxSpellPoints = getMaxSpellPoints(pool);
   const costPerCast = PointsPerSpellLevel[level];
 
   if (level > progression.maxSpellLevel - 1) return 0;
   if (level >= SpellLevel.SIX) return 1; // only one sixth level spell per long rest
-  return Math.floor((progression.maxSpellPoints / costPerCast))
+  return Math.floor((maxSpellPoints / costPerCast))
 }
 
 export function getCastingsUsedByOtherLevels(pool: SpellPointPool, level: number) {
